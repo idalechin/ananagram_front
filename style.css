@@ -1,5 +1,6 @@
 * {
     font-family: 'OpenSans', sans-serif;
+    color: rgba(0,0,0, .75);
 }
 
 .row--flex{
@@ -9,6 +10,7 @@
 
 .title{
     margin: 10px 0;
+    color: #ffffff;
 }
 
 .title__wrapper{
@@ -40,18 +42,62 @@
     padding: 36px 0;
 }
 
-.inputs{
+.range-field__title{
+    margin-top: 16px;
+}
 
+.collapsible-header{
+    display: flex;
+    align-items: center;
+}
+
+.collapsible_item.active i{
+    color: #26a69a;
+    transition: color 300ms ease;
+}
+
+.disabled{
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.color-blue{
+    color: #26a69a;
+    max-height: 0;
+    height: auto;
+    transition: max-height 250ms ease-in;
+    overflow: hidden;
+}
+
+.color-blue.active{
+    max-height: 200px;
+}
+
+
+[type="radio"]:checked + label::before{
+  border: 2px solid #26a69a
+}
+
+[type="radio"]:checked + label::after{
+    transform: scale(0.5);
+}
+
+label{
+    color: rgba(0,0,0, .75);
 }
 
 table{
     max-width: 100%;
+    letter-spacing: 1px;
 }
 
 table.highlight > tbody > tr:hover{
-    background-color: rgba(38, 166, 154, .8);
-    color: #ffffff;
-    transition: color .25s ease;
+    background-color: rgba(38, 166, 154, 0.53);
+}
+
+table.highlight > tbody > tr:hover span{
+    /*color: #ffffff !important;*/
+    transition: color .05s ease;
 }
 
 .wrap {
@@ -61,6 +107,11 @@ table.highlight > tbody > tr:hover{
 
 td{
     padding: 15px 10px;
+}
+
+td b{
+    color: #e53935;
+    font-weight: 500;
 }
 
 @media (max-width: 992px) {
