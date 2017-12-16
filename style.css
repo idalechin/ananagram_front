@@ -1,5 +1,6 @@
 * {
     font-family: 'OpenSans', sans-serif;
+    color: rgba(0,0,0, .75);
 }
 
 .row--flex{
@@ -9,6 +10,7 @@
 
 .title{
     margin: 10px 0;
+    color: #ffffff;
 }
 
 .title__wrapper{
@@ -46,12 +48,16 @@
 
 table{
     max-width: 100%;
+    letter-spacing: 1px;
 }
 
 table.highlight > tbody > tr:hover{
-    background-color: rgba(38, 166, 154, .8);
-    color: #ffffff;
-    transition: color .25s ease;
+    background-color: rgba(38, 166, 154, 0.53);
+}
+
+table.highlight > tbody > tr:hover span{
+    /*color: #ffffff !important;*/
+    transition: color .05s ease;
 }
 
 .wrap {
@@ -61,6 +67,11 @@ table.highlight > tbody > tr:hover{
 
 td{
     padding: 15px 10px;
+}
+
+td b{
+    color: #e53935;
+    font-weight: 500;
 }
 
 @media (max-width: 992px) {

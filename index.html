@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/vue@2.5.11/dist/vue.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
 <div id="app">
@@ -22,32 +23,50 @@
                 <div class="col s12">
                     <div class="row row--flex inputs ">
                         <div class="input-field col m7 s12">
-                            <input v-model="street" placeholder="Введите улицу" id="street" type="text">
+                            <input
+                                    v-model="street"
+                                    @keyup.enter="fetchData"
+                                    placeholder="Введите улицу"
+                                    id="street"
+                                    type="text"
+                            >
+
                             <label for="street">Улица</label>
                         </div>
                         <div class="input-field col m2 s12">
-                            <input v-model="building" placeholder="Дом" id="building" type="text">
+                            <input
+                                    v-model="building"
+                                    @keyup.enter="fetchData"
+                                    placeholder="Дом"
+                                    id="building"
+                                    type="text"
+                            >
                             <label for="building">Дом</label>
                         </div>
                         <a class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3" @click="fetchData">GO</a>
                     </div>
 
-                    <div class="section" v-if="list">
-                        <table class="striped highlight" id="table">
-                            <thead>
+                    <div v-if="list">
+                        <div class="section" v-if="list.length">
+                            <table class="striped highlight" id="table">
+                                <thead>
                                 <tr>
                                     <th>Улица</th>
                                     <th>Дома</th>
                                 </tr>
-                            </thead>
+                                </thead>
 
-                            <tbody>
+                                <tbody>
                                 <tr v-for="item in list">
-                                    <td>{{item.name}}</td>
+                                    <td><span v-html="item.name"></span</td>
                                     <td class="wrap">{{item.buildings && item.buildings.length ? item.buildings.join(', ') : ''}}</td>
                                 </tr>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-else>
+                            <h4>Ничего не найдено</h4>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,9 +99,10 @@
           data: { name: street, building : building} ,
           type: "GET",
           success: function(data){
-            vm.list = data && data.length ? data : null;
+            vm.list = data;
             setTimeout(function () {
-              $('html,body').animate({scrollTop: $("#table").offset().top}, 150);
+              var table = $("#table");
+              table.length && $('html,body').animate({scrollTop: table.offset().top}, 150);
             }, 50)
           }
         });
