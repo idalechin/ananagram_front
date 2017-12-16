@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ananagram</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="https://unpkg.com/vue"></script>
+    <!--<link href="https://fonts.googleapis.com/css?family=OpenSans:400,700" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+    <div class="title__wrapper">
+        <div class="title__logo">
+            <img src="logo_voronezh.svg" alt="">
+        </div>
+        <h2 class="title">Ananagram</h2>
+    </div>
+    <div class="container">
+        <main class="main">
+            <div class="row">
+                <div class="col s12">
+                    <div class="row row--flex inputs ">
+                        <div class="input-field col m7 s12">
+                            <input v-model="street" placeholder="Введите улицу" id="street" type="text">
+                            <label for="street">Улица</label>
+                        </div>
+                        <div class="input-field col m2 s12">
+                            <input v-model="building" placeholder="Дом" id="building" type="text">
+                            <label for="building">Дом</label>
+                        </div>
+                        <a class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3" @click="fetchData">GO</a>
+                    </div>
+
+                    <div class="section" v-if="list">
+                        <table class="striped highlight" id="table">
+                            <thead>
+                                <tr>
+                                    <th>Улица</th>
+                                    <th>Дома</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr v-for="item in list">
+                                    <td>{{item.name}}</td>
+                                    <td class="wrap">{{item.buildings && item.buildings.length ? item.buildings.join(', ') : ''}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      street: '',
+      building: '',
+      list: null,
+    },
+    watch: {
+      street: function (newStreet) {
+      },
+      building: function (newBuilding) {
+      }
+    },
+    methods: {
+      fetchData: function () {
+        var street = this.street && this.street.length ? this.street : null;
+        var building = this.building && this.building.length ? this.building : null;
+        var vm = this;
+
+        $.ajax({
+          url: 'http://botota.ru/streets/api?',
+          data: { street: street, building : building} ,
+          type: "GET",
+          success: function(data){
+            vm.list = data && data.length ? data : null;
+            setTimeout(function () {
+              $('html,body').animate({scrollTop: $("#table").offset().top}, 150);
+            }, 50)
+          }
+        });
+      }
+    }
+  })
+
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+</html>
