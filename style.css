@@ -42,8 +42,48 @@
     padding: 36px 0;
 }
 
-.inputs{
+.range-field__title{
+    margin-top: 16px;
+}
 
+.collapsible-header{
+    display: flex;
+    align-items: center;
+}
+
+.collapsible_item.active i{
+    color: #26a69a;
+    transition: color 300ms ease;
+}
+
+.disabled{
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.color-blue{
+    color: #26a69a;
+    max-height: 0;
+    height: auto;
+    transition: max-height 250ms ease-in;
+    overflow: hidden;
+}
+
+.color-blue.active{
+    max-height: 200px;
+}
+
+
+[type="radio"]:checked + label::before{
+  border: 2px solid #26a69a
+}
+
+[type="radio"]:checked + label::after{
+    transform: scale(0.5);
+}
+
+label{
+    color: rgba(0,0,0, .75);
 }
 
 table{

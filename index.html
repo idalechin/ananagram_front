@@ -3,11 +3,13 @@
 <head>
     <title>Ananagram</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!--<script src="https://unpkg.com/vue"></script>-->
-    <script src="https://unpkg.com/vue@2.5.11/dist/vue.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://unpkg.com/vue"></script>
+    <!--<script src="https://unpkg.com/vue@2.5.11/dist/vue.min.js"></script>-->
 </head>
 <body>
 <div id="app">
@@ -26,27 +28,88 @@
                             <input
                                     v-model="street"
                                     @keyup.enter="fetchData"
-                                    placeholder="Введите улицу"
                                     id="street"
                                     type="text"
                             >
 
-                            <label for="street">Улица</label>
+                            <label for="street">Введите улицу</label>
                         </div>
                         <div class="input-field col m2 s12">
                             <input
                                     v-model="building"
                                     @keyup.enter="fetchData"
-                                    placeholder="Дом"
                                     id="building"
                                     type="text"
                             >
-                            <label for="building">Дом</label>
+                            <label for="building">Введите дом</label>
                         </div>
-                        <a class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3" @click="fetchData">GO</a>
+                        <a
+                                class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3"
+                                :class="{disabled: lengthError || !street.length && !building.length}"
+                                @click="fetchData"
+                        >
+                            GO
+                        </a>
+                    </div>
+
+                    <div class="row">
+                        <ul class="collapsible" data-collapsible="accordion">
+                            <li class="collapsible_item">
+                                <div class="collapsible-header"><i class="material-icons">settings</i>Параметры поиска</div>
+                                <div class="collapsible-body">
+
+                                    <h6 :class="{active: !street.length}" class="color-blue">Для выбора параметров введите название улицы!</h6>
+
+                                    <p :class="{disabled: !street.length}">
+                                        <input v-model="options" value="not" name="options" type="radio" id="not" />
+                                        <label for="not">Без параметров</label>
+                                    </p>
+                                    <p :class="{disabled: !street.length}">
+                                        <input v-model="options" value="start" name="options" type="radio" id="start" />
+                                        <label for="start">Искать в начале слова</label>
+                                    </p>
+                                    <p :class="{disabled: !street.length}">
+                                        <input v-model="options" value="end" name="options" type="radio" id="end" />
+                                        <label for="end">Искать в конце слова</label>
+                                    </p>
+                                    <p :class="{disabled: !street.length}">
+                                        <input v-model="options" value="part" name="options" type="radio" id="part" />
+                                        <label for="part">Искать часть слова</label>
+                                    </p>
+                                    <p :class="{disabled: !street.length}">
+                                        <input v-model="options" value="order" name="options" type="radio" id="order" />
+                                        <label for="order">Искать буквы по порядку</label>
+                                    </p>
+                                    <div class="range-field row"  :class="{disabled: !street.length}">
+                                        <h6 class="range-field__title col s12">Количество букв в слове:</h6>
+                                        <div class="input-field col m3 s6">
+                                            <input
+                                                    v-model="from"
+                                                    @keypress="isNumber"
+                                                    id="from"
+                                                    type="text"
+                                                    :class="{invalid: lengthError}"
+                                            >
+                                            <label for="from">От</label>
+                                        </div>
+                                        <div class="input-field col m3 s6">
+                                            <input
+                                                    v-model="to"
+                                                    @keypress="isNumber"
+                                                    id="to"
+                                                    type="text"
+                                                    :class="{invalid: lengthError}"
+                                            >
+                                            <label for="to">До</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
 
                     <div v-if="list">
+                        <div class="divider"></div>
                         <div class="section" v-if="list.length">
                             <table class="striped highlight" id="table">
                                 <thead>
@@ -75,42 +138,81 @@
 </div>
 
 <script>
+
   var app = new Vue({
     el: '#app',
     data: {
       street: '',
       building: '',
       list: null,
+      options: "not",
+      from:'',
+      to:'',
+      lengthError: false
     },
     watch: {
-      street: function (newStreet) {
+      street: function (street) {
+        if(!street.length) {
+          this.options = 'not';
+          this.from = '';
+          this.to = '';
+          this.lengthError = false;
+        };
       },
-      building: function (newBuilding) {
-      }
+      to: function (to) {
+        if(this.street.length && to.length && this.from.length) this.lengthError = +to <= +this.from;
+        if(!to.length && !this.from.length) this.lengthError = false;
+      },
+      from: function (from) {
+        if(this.street.length && this.to.length && from.length) this.lengthError = +from >= +this.to;
+        if(!from.length && !this.to.length) this.lengthError = false;
+      },
     },
     methods: {
       fetchData: function () {
         var street = this.street && this.street.length ? this.street : null;
         var building = this.building && this.building.length ? this.building : null;
+        var options = this.options && this.options === 'not' ? null : this.options;
+        var from = this.from && this.from.length ? this.from : null;
+        var to = this.to && this.to.length ? this.to : null;
+        var length = (from ? 'from' + from : '') + (to ? 'to' + to : '');
         var vm = this;
+
+        var data = {
+          name: street,
+          building : building,
+          options: options,
+          length: length
+        };
 
         $.ajax({
           url: 'http://botota.ru/streets/api?',
-          data: { name: street, building : building} ,
+          data: data ,
           type: "GET",
           success: function(data){
             vm.list = data;
             setTimeout(function () {
               var table = $("#table");
-              table.length && $('html,body').animate({scrollTop: table.offset().top}, 150);
+              table.length && $('html,body').animate({scrollTop: table.offset().top}, 250);
             }, 50)
           }
         });
-      }
-    }
+      },
+      isNumber: function (evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46){
+          evt.preventDefault();
+        } else {
+          return true;
+        }
+      },
+    },
   })
 
 </script>
+
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 </body>
