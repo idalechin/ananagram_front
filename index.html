@@ -6,10 +6,10 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
 
-    <script src="https://unpkg.com/vue"></script>
-    <!--<script src="https://unpkg.com/vue@2.5.11/dist/vue.min.js"></script>-->
+    <!--<script src="https://unpkg.com/vue"></script>-->
+    <script src="https://unpkg.com/vue@2.5.11/dist/vue.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -23,35 +23,6 @@
         <main class="main">
             <div class="row">
                 <div class="col s12">
-                    <div class="row row--flex inputs ">
-                        <div class="input-field col m7 s12">
-                            <input
-                                    v-model="street"
-                                    @keyup.enter="fetchData"
-                                    id="street"
-                                    type="text"
-                            >
-
-                            <label for="street">Улица</label>
-                        </div>
-                        <div class="input-field col m2 s12">
-                            <input
-                                    v-model="building"
-                                    @keyup.enter="fetchData"
-                                    id="building"
-                                    type="text"
-                            >
-                            <label for="building">Дом</label>
-                        </div>
-                        <a
-                                class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3 full"
-                                :class="{disabled: lengthError || !street.length && !building.length}"
-                                @click="fetchData"
-                        >
-                            GO
-                        </a>
-                    </div>
-
                     <div class="row additional-inputs">
                         <ul class="collapsible" data-collapsible="accordion">
                             <li class="collapsible_item">
@@ -106,17 +77,46 @@
                         </ul>
                     </div>
 
-                    <div class="row mobile" >
-                        <div class="col s12">
-                            <a
-                                    class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3"
-                                    :class="{disabled: lengthError || !street.length && !building.length}"
-                                    @click="fetchData"
+                    <div class="row row--flex inputs ">
+                        <div class="input-field col m9 s12">
+                            <input
+                                    v-model="street"
+                                    @keyup="startDebounce"
+                                    id="street"
+                                    type="text"
                             >
-                                GO
-                            </a>
+
+                            <label for="street">Улица</label>
                         </div>
+                        <div class="input-field col m3 s12">
+                            <input
+                                    v-model="building"
+                                    @keyup="startDebounce"
+                                    id="building"
+                                    type="text"
+                            >
+                            <label for="building">Дом</label>
+                        </div>
+                        <!--<a-->
+                                <!--class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3 full"-->
+                                <!--:class="{disabled: lengthError || !street.length && !building.length}"-->
+                                <!--@click="fetchData"-->
+                        <!--&gt;-->
+                            <!--GO-->
+                        <!--</a>-->
                     </div>
+
+                    <!--<div class="row mobile" >-->
+                        <!--<div class="col s12">-->
+                            <!--<a-->
+                                    <!--class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3"-->
+                                    <!--:class="{disabled: lengthError || !street.length && !building.length}"-->
+                                    <!--@click="fetchData"-->
+                            <!--&gt;-->
+                                <!--GO-->
+                            <!--</a>-->
+                        <!--</div>-->
+                    <!--</div>-->
 
                     <div class="preloader__wrapper section" v-if="showLoader">
                         <div class="preloader-wrapper active">
@@ -179,29 +179,39 @@
       to:'',
       lengthError: false,
       showLoader: false,
-      hasClass: ''
+      hasClass: '',
+      timer: null
     },
     watch: {
-      street: function (street) {
-        if(!street.length) {
-          this.from = '';
-          this.to = '';
-          this.lengthError = false;
-        };
-      },
       to: function (to) {
-        if(this.street.length && to.length && this.from.length) this.lengthError = +to <= +this.from;
+        if(to.length && this.from.length) this.lengthError = +to < +this.from;
         if(!to.length && !this.from.length) this.lengthError = false;
       },
       from: function (from) {
-        if(this.street.length && this.to.length && from.length) this.lengthError = +from >= +this.to;
+        if(this.to.length && from.length) this.lengthError = +from > +this.to;
         if(!from.length && !this.to.length) this.lengthError = false;
       },
       options: function (options) {
         this.hasClass = options !== 'not';
-      },
+      }
     },
     methods: {
+      startDebounce: function () {
+        console.log('startDebounce')
+        this.stopTimer();
+        this.startTimer();
+      },
+      startTimer: function(){
+        console.log('startTimer')
+        var vm = this;
+        this.timer = setTimeout( function () {
+          vm.fetchData();
+        }, 1000 )
+      },
+      stopTimer: function () {
+        console.log('stopTimer')
+        clearTimeout(this.timer);
+      },
       fetchData: function () {
         var street = this.street && this.street.length ? this.street : null;
         var building = this.building && this.building.length ? this.building : null;
@@ -218,9 +228,16 @@
           length: length
         };
 
+        if(!this.street.length && !this.building.length) {
+          vm.list = null;
+          return false;
+        }
+
         this.showLoader = true;
         var additionalInputs = $(".additional-inputs");
         additionalInputs.length && $('html,body').animate({scrollTop: additionalInputs.offset().top + additionalInputs.height() + 30}, 100);
+
+        console.log('fetch');
 
         $.ajax({
           url: 'http://botota.ru/streets/api?',
