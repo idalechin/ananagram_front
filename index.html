@@ -58,29 +58,27 @@
                                 <div class="collapsible-header" :class="{'has-option': hasClass}"><i class="material-icons">settings</i>Параметры поиска</div>
                                 <div class="collapsible-body">
 
-                                    <h6 :class="{active: !street.length}" class="color-blue">Для выбора параметров введите название улицы!</h6>
-
-                                    <p :class="{disabled: !street.length}">
+                                    <p>
                                         <input v-model="options" value="not" name="options" type="radio" id="not" />
                                         <label for="not">Без параметров</label>
                                     </p>
-                                    <p :class="{disabled: !street.length}">
+                                    <p>
                                         <input v-model="options" value="start" name="options" type="radio" id="start" />
                                         <label for="start">Искать в начале слова</label>
                                     </p>
-                                    <p :class="{disabled: !street.length}">
+                                    <p>
                                         <input v-model="options" value="end" name="options" type="radio" id="end" />
                                         <label for="end">Искать в конце слова</label>
                                     </p>
-                                    <p :class="{disabled: !street.length}">
+                                    <p>
                                         <input v-model="options" value="part" name="options" type="radio" id="part" />
                                         <label for="part">Искать часть слова</label>
                                     </p>
-                                    <p :class="{disabled: !street.length}">
+                                    <p>
                                         <input v-model="options" value="order" name="options" type="radio" id="order" />
                                         <label for="order">Искать буквы по порядку</label>
                                     </p>
-                                    <div class="range-field row"  :class="{disabled: !street.length}">
+                                    <div class="range-field row">
                                         <h6 class="range-field__title col s12">Количество букв в слове:</h6>
                                         <div class="input-field col m3 s6">
                                             <input
@@ -186,7 +184,6 @@
     watch: {
       street: function (street) {
         if(!street.length) {
-          this.options = 'not';
           this.from = '';
           this.to = '';
           this.lengthError = false;
