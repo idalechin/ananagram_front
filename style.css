@@ -51,6 +51,11 @@
     align-items: center;
 }
 
+.collapsible-header.has-option i{
+    color: #26a69a;
+    transition: color 300ms ease;
+}
+
 .collapsible_item.active i{
     color: #26a69a;
     transition: color 300ms ease;
@@ -86,6 +91,21 @@ label{
     color: rgba(0,0,0, .75);
 }
 
+.preloader__wrapper{
+    display: flex;
+    justify-content: center;
+}
+
+.to-top{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.btn-floating i{
+    line-height: 35px;
+}
+
 table{
     max-width: 100%;
     letter-spacing: 1px;
@@ -114,6 +134,10 @@ td b{
     font-weight: 500;
 }
 
+.mobile{
+    display: none;
+}
+
 @media (max-width: 992px) {
     .title{
         margin: 0;
@@ -121,6 +145,14 @@ td b{
 }
 
 @media (max-width: 600px) {
+    .mobile{
+        display: block;
+    }
+
+    .full{
+        display: none;
+    }
+
     .row--flex{
         flex-wrap: wrap;
     }

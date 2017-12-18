@@ -32,7 +32,7 @@
                                     type="text"
                             >
 
-                            <label for="street">Введите улицу</label>
+                            <label for="street">Улица</label>
                         </div>
                         <div class="input-field col m2 s12">
                             <input
@@ -41,10 +41,10 @@
                                     id="building"
                                     type="text"
                             >
-                            <label for="building">Введите дом</label>
+                            <label for="building">Дом</label>
                         </div>
                         <a
-                                class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3"
+                                class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3 full"
                                 :class="{disabled: lengthError || !street.length && !building.length}"
                                 @click="fetchData"
                         >
@@ -52,10 +52,10 @@
                         </a>
                     </div>
 
-                    <div class="row">
+                    <div class="row additional-inputs">
                         <ul class="collapsible" data-collapsible="accordion">
                             <li class="collapsible_item">
-                                <div class="collapsible-header"><i class="material-icons">settings</i>Параметры поиска</div>
+                                <div class="collapsible-header" :class="{'has-option': hasClass}"><i class="material-icons">settings</i>Параметры поиска</div>
                                 <div class="collapsible-body">
 
                                     <h6 :class="{active: !street.length}" class="color-blue">Для выбора параметров введите название улицы!</h6>
@@ -108,6 +108,32 @@
                         </ul>
                     </div>
 
+                    <div class="row mobile" >
+                        <div class="col s12">
+                            <a
+                                    class="waves-effect waves-light btn col m2  s12 offset-m1 z-depth-3"
+                                    :class="{disabled: lengthError || !street.length && !building.length}"
+                                    @click="fetchData"
+                            >
+                                GO
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="preloader__wrapper section" v-if="showLoader">
+                        <div class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-red-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div v-if="list">
                         <div class="divider"></div>
                         <div class="section" v-if="list.length">
@@ -135,6 +161,11 @@
             </div>
         </main>
     </div>
+
+    <a href="#!" class="waves-effect waves-circle waves-light btn-floating secondary-content to-top" v-if="list" @click="toTop">
+        <i class="material-icons">keyboard_arrow_up</i>
+    </a>
+
 </div>
 
 <script>
@@ -148,7 +179,9 @@
       options: "not",
       from:'',
       to:'',
-      lengthError: false
+      lengthError: false,
+      showLoader: false,
+      hasClass: ''
     },
     watch: {
       street: function (street) {
@@ -166,6 +199,9 @@
       from: function (from) {
         if(this.street.length && this.to.length && from.length) this.lengthError = +from >= +this.to;
         if(!from.length && !this.to.length) this.lengthError = false;
+      },
+      options: function (options) {
+        this.hasClass = options !== 'not';
       },
     },
     methods: {
@@ -185,17 +221,27 @@
           length: length
         };
 
+        this.showLoader = true;
+        var additionalInputs = $(".additional-inputs");
+        additionalInputs.length && $('html,body').animate({scrollTop: additionalInputs.offset().top + additionalInputs.height() + 30}, 100);
+
         $.ajax({
           url: 'http://botota.ru/streets/api?',
           data: data ,
           type: "GET",
           success: function(data){
             vm.list = data;
+            vm.showLoader = false;
+
             setTimeout(function () {
               var table = $("#table");
-              table.length && $('html,body').animate({scrollTop: table.offset().top}, 250);
-            }, 50)
-          }
+              table.length && $('html,body').animate({scrollTop: table.offset().top}, 150);
+            }, 150)
+
+          },
+          error: function(){
+            vm.showLoader = false;
+          },
         });
       },
       isNumber: function (evt) {
@@ -206,6 +252,9 @@
         } else {
           return true;
         }
+      },
+      toTop: function () {
+        $('html,body').animate({scrollTop: $('body').offset().top}, 250);
       },
     },
   })
